@@ -1,0 +1,29 @@
+{
+  "name": "juliatan",
+  "version": "1.0.0",
+  "description": "juliatan server",
+  "main": "lib/app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "babel -w src --out-dir lib",
+    "serve": "node lib/app.js",
+    "servemon": "nodemon -w lib"
+  },
+  "author": "Jon Malmaud",
+  "license": "MIT",
+  "dependencies": {
+    "babel-polyfill": "^6.23.0",
+    "body-parser": "^1.16.1",
+    "express": "^4.14.1",
+    "request": "^2.79.0",
+    "rethink": "^1.4.0",
+    "zmq": "^2.15.3"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.23.0",
+    "babel-plugin-transform-async-generator-functions": "^6.22.0",
+    "babel-polyfill": "^6.23.0",
+    "babel-preset-env": "^1.1.10",
+    "nodemon": "^1.11.0"
+  }
+}

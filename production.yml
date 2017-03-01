@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  frontend:
+    ports:
+      - "80:3000"
+    command: /bin/bash /project/run_devserver.sh
+  db:
+    volumes:
+      - "/data:/data"

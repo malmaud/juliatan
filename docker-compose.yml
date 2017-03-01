@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  backend_julia5:
+    build: julia/
+    ports:
+      - "10000:10000"
+    restart: unless-stopped
+  frontend:
+    build: node/
+    ports:
+      - "10001:3000"
+    depends_on:
+      - db
+      - backend_julia5
+  db:
+    image: rethinkdb
