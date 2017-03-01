@@ -11,6 +11,6 @@ services:
       - "/Users/malmaud/tmp/project/julia/script.jl:/script.jl"
   db:
     ports:
-      - "10002:8080"
+      - "10003:8080"
     volumes:
       - "/Users/malmaud/tmp/data:/data"

@@ -5,7 +5,11 @@ import r from 'rethinkdb'
 import request_lib from 'request'
 
 let app = express()
-let socket = null
+let sockets = {}
+let backends = [
+  {name: 'julia5', server: 'backend_julia5:10000'},
+  {name: 'julia6', server: 'backend_julia6:10000'}
+]
 let connection = null
 let timeout_duration = 2000  // In milliseconds
 let msg_id = 0
@@ -37,7 +41,7 @@ function send_json(res, d) {
   res.send(JSON.stringify(d))
 }
 
-function process_message(msg) {
+function process_message(socket, msg) {
   let backend_msg = JSON.parse(msg.toString())
   console.log(`Processing message ${msg.toString()}`)
   let msg_id = backend_msg["message_id"]
@@ -94,10 +98,10 @@ function process_message(msg) {
 }
 
 app.post('/slack', async (req, res) => {
+  let backend_name = 'julia6'
   let cur_msg_id = msg_id
   response_map[msg_id] = res
   response_urls[msg_id] = req.body.response_url
-  let got_msg = false
   req.body['message_id'] = msg_id
   r.table('requests').insert(req.body).run(connection)
 
@@ -111,24 +115,35 @@ app.post('/slack', async (req, res) => {
       msg['attachments'] = [attachment]
       msg['response_type'] = 'in_channel'
       send_json(res, msg)
-      make_socket()
+      make_socket(backend_name)
     }
   }
   setTimeout(onTimeout, timeout_duration)
   let backend_request = {code: req.body.text, message_id: msg_id}
   msg_id += 1
+  let socket = sockets[backend_name]
   socket.send(JSON.stringify(backend_request))
 })
 
-function make_socket() {
-  socket = zmq.socket('dealer')
-  socket.on('message', msg=>{
-    process_message(msg)
+function make_socket(name) {
+  let server
+  backends.forEach(backend=>{
+    if (backend['name'] == name) {
+      server = backend['server']
+    }
   })
-  socket.connect('tcp://backend_julia5:10000')
+  let socket = zmq.socket('dealer')
+  socket.on('message', msg=>{
+    process_message(socket, msg)
+  })
+  socket.connect(`tcp://${server}`)
+  sockets[name] = socket
+  return socket
 }
 
 app.listen(3000, ()=>{
   console.log('Listening')
-  make_socket()
+  backends.forEach(backend=>{
+    make_socket(backend['name'])
+  })
 })

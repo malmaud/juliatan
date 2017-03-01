@@ -1,3 +1,0 @@
-[submodule "JuliaDockerImages"]
-	path = julia/JuliaDockerImages
-	url = https://github.com/tanmaykm/JuliaDockerImages.git
