@@ -1,4 +1,4 @@
-FROM ontouchstart/julia-nightly
+FROM julialang/julia:v0.6.0-dev
 RUN julia -e "Pkg.add(\"ZMQ\"); Pkg.add(\"JSON\");"
 ADD script.jl /
 CMD julia /script.jl

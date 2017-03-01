@@ -33,21 +33,25 @@ while true
     info("Got code $code")
     output = Dict()
     output[:message_id] = parsed_msg["message_id"]
-    old_stdout = STDOUT
-    new_stdout, _ = redirect_stdout()
-    print('a')  # To make 'readavailable' below work
-    try
-        result = eval(Client, parse(code))
-        output[:result] = string(result)
-        output[:kind] = :normal
-        output[:type] = string(typeof(result))
-    catch err
-        output[:result] = string(err)
-        output[:kind] = :error
-        output[:type] = string(typeof(err))
-    finally
-        redirect_stdout(old_stdout)
-        output[:stdout] = String(readavailable(new_stdout))[2:end]
+    if false #code[1] == "!"
+        cmd = code[2:end]        
+    else
+        old_stdout = STDOUT
+        new_stdout, _ = redirect_stdout()
+        print('a')  # To make 'readavailable' below work
+        try
+            result = eval(Client, parse(code))
+            output[:result] = string(result)
+            output[:kind] = :normal
+            output[:type] = string(typeof(result))
+        catch err
+            output[:result] = string(err)
+            output[:kind] = :error
+            output[:type] = string(typeof(err))
+        finally
+            redirect_stdout(old_stdout)
+            output[:stdout] = String(readavailable(new_stdout))[2:end]
+        end
     end
     info("Sending back $output")
     for key in [:stdout, :result, :type]

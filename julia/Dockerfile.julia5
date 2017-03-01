@@ -1,6 +1,4 @@
-FROM julia
-RUN apt-get update -y
-RUN apt-get install -y libzmq3-dev
+FROM julialang/julia:v0.5.0
 RUN julia -e "Pkg.add(\"ZMQ\"); Pkg.add(\"JSON\");"
 ADD script.jl /
 CMD julia /script.jl
