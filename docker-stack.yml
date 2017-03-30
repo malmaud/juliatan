@@ -1,0 +1,41 @@
+version: '3'
+
+services:
+  backend_julia6:
+    image: backend_julia6
+    build:
+      context: ./julia
+      dockerfile: Dockerfile.julia6
+    deploy:
+      restart_policy:
+        condition: on-failure
+      replicas: 2
+      update_config:
+        delay: 20s
+
+  frontend:
+    image: frontend
+    build: node/
+    ports:
+      - "80:3000"
+    depends_on:
+      - db
+      - backend_julia6
+    deploy:
+      restart_policy:
+        condition: on-failure
+      replicas: 2
+      update_config:
+        delay: 20s
+    command: /bin/bash /project/run_devserver.sh
+
+  db:
+    image: rethinkdb
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+    volumes:
+      - "juliatan_db:/data"
+
+volumes:
+  juliatan_db:

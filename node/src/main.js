@@ -7,7 +7,6 @@ import request_lib from 'request'
 let app = express()
 let sockets = {}
 let backends = [
-  {name: 'julia5', server: 'backend_julia5:10000'},
   {name: 'julia6', server: 'backend_julia6:10000'}
 ]
 let connection = null
